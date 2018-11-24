@@ -81,7 +81,7 @@ class PDFweblink(object):
 
 # execute tool
 link = r'http://www.ima.uni-stuttgart.de/studium/stud_arbeiten/bereich_zuv/index.html'
-path = r'\\imapc\benutzer\Mitarbeiterdaten\henss'
+path = r'C:\Users\%USERNAME%\Desktop'
 
 StudArbeiten = PDFweblink(link, path)
 StudArbeiten.fetch_pdflinks()
