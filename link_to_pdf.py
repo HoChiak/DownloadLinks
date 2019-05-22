@@ -18,61 +18,61 @@ from bs4 import BeautifulSoup
 # define classes and functions
 class Weblink():
     """
-    Class for weblinks containing PDFs to be downloaded.
+    Class for weblinks containing Filetypes to be downloaded.
     """
 
-    def __init__(self, weblink, pdflist=list()):
+    def __init__(self, weblink, LinkList=list()):
         """
         Class constructor
         """
         self.Weblink = weblink
-        self.PDFlist = pdflist
+        self.LinkList = LinkList
 
-    def tweak_pdflinks(self):
+    def tweak_links(self):
         """
         Instance method to tweak relative links to absolute links
         """
-        for tp in enumerate(self.PDFlist):
+        for tp in enumerate(self.LinkList):
             if not(tp[1].startswith('http:') or
                    tp[1].startswith('https:') or
                    tp[1].startswith('www.')):
-                if self.PDFlist[tp[0]][0] == '/':
+                if self.LinkList[tp[0]][0] == '/':
                     first_part = self.Weblink.partition('www.')[0]
                     sec_part = self.Weblink.partition('www.')[2]
                     sec_part = sec_part.partition('/')[0]+tp[1]
-                    self.PDFlist[tp[0]] = str(first_part + 'www.' + sec_part)
+                    self.LinkList[tp[0]] = str(first_part + sec_part)
                 else:
                     first_part = self.Weblink.partition('www.')[0]
                     sec_part = self.Weblink.partition('www.')[2]
                     sec_part = sec_part.partition('/')[0]+'/'+tp[1]
-                    self.PDFlist[tp[0]] = str(first_part + 'www.' + sec_part)
-        return(self.PDFlist)
+                    self.LinkList[tp[0]] = str(first_part + sec_part)
+        return(self.LinkList)
 
-    def fetch_pdflinks(self):
+    def fetch_links(self, filetype='pdf'):
         """
-        Instance method to fetch only pdf's from weblink
+        Instance method to fetch only links of the given filetype from weblink
         """
         html = urlopen(self.Weblink).read()
         pagesoup = BeautifulSoup(html, 'html.parser')
-        tp_pdflink = ''
+        tp_link = ''
         for tp in pagesoup.find_all('a'):
-            tp_pdflink = tp.get('href')
+            tp_link = tp.get('href')
             try:
-                if (tp_pdflink.endswith('pdf') and tp_pdflink is not None):
-                    self.PDFlist.append(tp_pdflink)
+                if (tp_link.endswith(filetype) and tp_link is not None):
+                    self.LinkList.append(tp_link)
             except AttributeError:
                 pass
         # html.close()
-        self.tweak_pdflinks()
-        return(self.PDFlist)
+        self.tweak_links()
+        return(self.LinkList)
 
-    def download_pdfs(self, localpath):
+    def download_links(self, localpath):
         """
-        Instance method to download PDFs
+        Instance method to download Links
         """
         os.chdir(localpath)
-        for tp in enumerate(self.PDFlist):
-            pdf_html = self.PDFlist[tp[0]]
-            pdf_name = self.PDFlist[tp[0]].rpartition('/')[2]
-            urlretrieve(pdf_html, pdf_name)
-        print("PDFs are downloaed to: " + str(localpath))
+        for tp in enumerate(self.LinkList):
+            link_html = self.LinkList[tp[0]]
+            link_name = self.LinkList[tp[0]].rpartition('/')[2]
+            urlretrieve(link_html, link_name)
+        print("Links are downloaed to: " + str(localpath))
